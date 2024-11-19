@@ -1,0 +1,368 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Хранилище NavalBaseModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Базы">
+          <Key>
+            <PropertyRef Name="Номер базы" />
+          </Key>
+          <Property Name="Номер базы" Type="int" Nullable="false" />
+          <Property Name="Название базы" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Географическое расположение" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Количество частей" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Корабли">
+          <Key>
+            <PropertyRef Name="Идентификационный номер корабля" />
+          </Key>
+          <Property Name="Идентификационный номер корабля" Type="int" Nullable="false" />
+          <Property Name="Название корабля" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Тип корабля" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Дата создания" Type="date" Nullable="false" />
+          <Property Name="Наработка" Type="int" Nullable="false" />
+          <Property Name="Количество посадочных мест" Type="int" Nullable="false" />
+          <Property Name="Устройство двигателя" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Тип привода" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Размещение корпуса" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Личный состав">
+          <Key>
+            <PropertyRef Name="Номер солдата" />
+          </Key>
+          <Property Name="Номер солдата" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Фамилия" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Часть" Type="int" Nullable="false" />
+          <Property Name="Должность" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Год рождения" Type="int" Nullable="false" />
+          <Property Name="Год поступления на службу" Type="int" Nullable="false" />
+          <Property Name="Выслуга лет" Type="int" StoreGeneratedPattern="Computed" />
+          <Property Name="Награды" Type="nvarchar(max)" />
+          <Property Name="Фото" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Учения">
+          <Key>
+            <PropertyRef Name="Номер учения" />
+          </Key>
+          <Property Name="Номер учения" Type="int" Nullable="false" />
+          <Property Name="Часть" Type="int" Nullable="false" />
+          <Property Name="Корабль" Type="int" Nullable="false" />
+          <Property Name="Дата учения" Type="date" Nullable="false" />
+          <Property Name="Место проведения" Type="nvarchar" MaxLength="100" />
+          <Property Name="Оценка" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Части">
+          <Key>
+            <PropertyRef Name="Номер части" />
+          </Key>
+          <Property Name="Номер части" Type="int" Nullable="false" />
+          <Property Name="База флота" Type="int" Nullable="false" />
+          <Property Name="Место базирования" Type="nvarchar" MaxLength="100" />
+          <Property Name="Вид войск" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Личный состав_Части">
+          <End Role="Части" Type="Self.Части" Multiplicity="1" />
+          <End Role="Личный состав" Type="Self.Личный состав" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Части">
+              <PropertyRef Name="Номер части" />
+            </Principal>
+            <Dependent Role="Личный состав">
+              <PropertyRef Name="Часть" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Учения_Корабли">
+          <End Role="Корабли" Type="Self.Корабли" Multiplicity="1" />
+          <End Role="Учения" Type="Self.Учения" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Корабли">
+              <PropertyRef Name="Идентификационный номер корабля" />
+            </Principal>
+            <Dependent Role="Учения">
+              <PropertyRef Name="Корабль" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Учения_Части">
+          <End Role="Части" Type="Self.Части" Multiplicity="1" />
+          <End Role="Учения" Type="Self.Учения" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Части">
+              <PropertyRef Name="Номер части" />
+            </Principal>
+            <Dependent Role="Учения">
+              <PropertyRef Name="Часть" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Части_Базы">
+          <End Role="Базы" Type="Self.Базы" Multiplicity="1" />
+          <End Role="Части" Type="Self.Части" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Базы">
+              <PropertyRef Name="Номер базы" />
+            </Principal>
+            <Dependent Role="Части">
+              <PropertyRef Name="База флота" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище NavalBaseModelContainer">
+          <EntitySet Name="Базы" EntityType="Self.Базы" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Корабли" EntityType="Self.Корабли" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Личный состав" EntityType="Self.Личный состав" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Учения" EntityType="Self.Учения" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Части" EntityType="Self.Части" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Личный состав_Части" Association="Self.FK_Личный состав_Части">
+            <End Role="Части" EntitySet="Части" />
+            <End Role="Личный состав" EntitySet="Личный состав" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Учения_Корабли" Association="Self.FK_Учения_Корабли">
+            <End Role="Корабли" EntitySet="Корабли" />
+            <End Role="Учения" EntitySet="Учения" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Учения_Части" Association="Self.FK_Учения_Части">
+            <End Role="Части" EntitySet="Части" />
+            <End Role="Учения" EntitySet="Учения" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Части_Базы" Association="Self.FK_Части_Базы">
+            <End Role="Базы" EntitySet="Базы" />
+            <End Role="Части" EntitySet="Части" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="NavalBaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Базы">
+          <Key>
+            <PropertyRef Name="Номер_базы" />
+          </Key>
+          <Property Name="Номер_базы" Type="Int32" Nullable="false" />
+          <Property Name="Название_базы" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Географическое_расположение" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Количество_частей" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Части" Relationship="Self.FK_Части_Базы" FromRole="Базы" ToRole="Части" />
+        </EntityType>
+        <EntityType Name="Корабли">
+          <Key>
+            <PropertyRef Name="Идентификационный_номер_корабля" />
+          </Key>
+          <Property Name="Идентификационный_номер_корабля" Type="Int32" Nullable="false" />
+          <Property Name="Название_корабля" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Тип_корабля" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Дата_создания" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Наработка" Type="Int32" Nullable="false" />
+          <Property Name="Количество_посадочных_мест" Type="Int32" Nullable="false" />
+          <Property Name="Устройство_двигателя" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Тип_привода" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Размещение_корпуса" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Учения" Relationship="Self.FK_Учения_Корабли" FromRole="Корабли" ToRole="Учения" />
+        </EntityType>
+        <EntityType Name="Личный_состав">
+          <Key>
+            <PropertyRef Name="Номер_солдата" />
+          </Key>
+          <Property Name="Номер_солдата" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Фамилия" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Часть" Type="Int32" Nullable="false" />
+          <Property Name="Должность" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Год_рождения" Type="Int32" Nullable="false" />
+          <Property Name="Год_поступления_на_службу" Type="Int32" Nullable="false" />
+          <Property Name="Выслуга_лет" Type="Int32" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="Награды" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Фото" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Части" Relationship="Self.FK_Личный_состав_Части" FromRole="Личный_состав" ToRole="Части" />
+        </EntityType>
+        <EntityType Name="Учения">
+          <Key>
+            <PropertyRef Name="Номер_учения" />
+          </Key>
+          <Property Name="Номер_учения" Type="Int32" Nullable="false" />
+          <Property Name="Часть" Type="Int32" Nullable="false" />
+          <Property Name="Корабль" Type="Int32" Nullable="false" />
+          <Property Name="Дата_учения" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Место_проведения" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Оценка" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Корабли" Relationship="Self.FK_Учения_Корабли" FromRole="Учения" ToRole="Корабли" />
+          <NavigationProperty Name="Части" Relationship="Self.FK_Учения_Части" FromRole="Учения" ToRole="Части" />
+        </EntityType>
+        <EntityType Name="Части">
+          <Key>
+            <PropertyRef Name="Номер_части" />
+          </Key>
+          <Property Name="Номер_части" Type="Int32" Nullable="false" />
+          <Property Name="База_флота" Type="Int32" Nullable="false" />
+          <Property Name="Место_базирования" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Вид_войск" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Базы" Relationship="Self.FK_Части_Базы" FromRole="Части" ToRole="Базы" />
+          <NavigationProperty Name="Личный_состав" Relationship="Self.FK_Личный_состав_Части" FromRole="Части" ToRole="Личный_состав" />
+          <NavigationProperty Name="Учения" Relationship="Self.FK_Учения_Части" FromRole="Части" ToRole="Учения" />
+        </EntityType>
+        <Association Name="FK_Части_Базы">
+          <End Role="Базы" Type="Self.Базы" Multiplicity="1" />
+          <End Role="Части" Type="Self.Части" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Базы">
+              <PropertyRef Name="Номер_базы" />
+            </Principal>
+            <Dependent Role="Части">
+              <PropertyRef Name="База_флота" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Учения_Корабли">
+          <End Role="Корабли" Type="Self.Корабли" Multiplicity="1" />
+          <End Role="Учения" Type="Self.Учения" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Корабли">
+              <PropertyRef Name="Идентификационный_номер_корабля" />
+            </Principal>
+            <Dependent Role="Учения">
+              <PropertyRef Name="Корабль" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Личный_состав_Части">
+          <End Role="Части" Type="Self.Части" Multiplicity="1" />
+          <End Role="Личный_состав" Type="Self.Личный_состав" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Части">
+              <PropertyRef Name="Номер_части" />
+            </Principal>
+            <Dependent Role="Личный_состав">
+              <PropertyRef Name="Часть" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Учения_Части">
+          <End Role="Части" Type="Self.Части" Multiplicity="1" />
+          <End Role="Учения" Type="Self.Учения" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Части">
+              <PropertyRef Name="Номер_части" />
+            </Principal>
+            <Dependent Role="Учения">
+              <PropertyRef Name="Часть" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="NavalBaseEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Базы" EntityType="Self.Базы" />
+          <EntitySet Name="Корабли" EntityType="Self.Корабли" />
+          <EntitySet Name="Личный_состав" EntityType="Self.Личный_состав" />
+          <EntitySet Name="Учения" EntityType="Self.Учения" />
+          <EntitySet Name="Части" EntityType="Self.Части" />
+          <AssociationSet Name="FK_Части_Базы" Association="Self.FK_Части_Базы">
+            <End Role="Базы" EntitySet="Базы" />
+            <End Role="Части" EntitySet="Части" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Учения_Корабли" Association="Self.FK_Учения_Корабли">
+            <End Role="Корабли" EntitySet="Корабли" />
+            <End Role="Учения" EntitySet="Учения" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Личный_состав_Части" Association="Self.FK_Личный_состав_Части">
+            <End Role="Части" EntitySet="Части" />
+            <End Role="Личный_состав" EntitySet="Личный_состав" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Учения_Части" Association="Self.FK_Учения_Части">
+            <End Role="Части" EntitySet="Части" />
+            <End Role="Учения" EntitySet="Учения" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище NavalBaseModelContainer" CdmEntityContainer="NavalBaseEntities2">
+          <EntitySetMapping Name="Базы">
+            <EntityTypeMapping TypeName="NavalBaseModel.Базы">
+              <MappingFragment StoreEntitySet="Базы">
+                <ScalarProperty Name="Номер_базы" ColumnName="Номер базы" />
+                <ScalarProperty Name="Название_базы" ColumnName="Название базы" />
+                <ScalarProperty Name="Географическое_расположение" ColumnName="Географическое расположение" />
+                <ScalarProperty Name="Количество_частей" ColumnName="Количество частей" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Корабли">
+            <EntityTypeMapping TypeName="NavalBaseModel.Корабли">
+              <MappingFragment StoreEntitySet="Корабли">
+                <ScalarProperty Name="Идентификационный_номер_корабля" ColumnName="Идентификационный номер корабля" />
+                <ScalarProperty Name="Название_корабля" ColumnName="Название корабля" />
+                <ScalarProperty Name="Тип_корабля" ColumnName="Тип корабля" />
+                <ScalarProperty Name="Дата_создания" ColumnName="Дата создания" />
+                <ScalarProperty Name="Наработка" ColumnName="Наработка" />
+                <ScalarProperty Name="Количество_посадочных_мест" ColumnName="Количество посадочных мест" />
+                <ScalarProperty Name="Устройство_двигателя" ColumnName="Устройство двигателя" />
+                <ScalarProperty Name="Тип_привода" ColumnName="Тип привода" />
+                <ScalarProperty Name="Размещение_корпуса" ColumnName="Размещение корпуса" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Личный_состав">
+            <EntityTypeMapping TypeName="NavalBaseModel.Личный_состав">
+              <MappingFragment StoreEntitySet="Личный состав">
+                <ScalarProperty Name="Номер_солдата" ColumnName="Номер солдата" />
+                <ScalarProperty Name="Фамилия" ColumnName="Фамилия" />
+                <ScalarProperty Name="Часть" ColumnName="Часть" />
+                <ScalarProperty Name="Должность" ColumnName="Должность" />
+                <ScalarProperty Name="Год_рождения" ColumnName="Год рождения" />
+                <ScalarProperty Name="Год_поступления_на_службу" ColumnName="Год поступления на службу" />
+                <ScalarProperty Name="Выслуга_лет" ColumnName="Выслуга лет" />
+                <ScalarProperty Name="Награды" ColumnName="Награды" />
+                <ScalarProperty Name="Фото" ColumnName="Фото" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Учения">
+            <EntityTypeMapping TypeName="NavalBaseModel.Учения">
+              <MappingFragment StoreEntitySet="Учения">
+                <ScalarProperty Name="Номер_учения" ColumnName="Номер учения" />
+                <ScalarProperty Name="Часть" ColumnName="Часть" />
+                <ScalarProperty Name="Корабль" ColumnName="Корабль" />
+                <ScalarProperty Name="Дата_учения" ColumnName="Дата учения" />
+                <ScalarProperty Name="Место_проведения" ColumnName="Место проведения" />
+                <ScalarProperty Name="Оценка" ColumnName="Оценка" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Части">
+            <EntityTypeMapping TypeName="NavalBaseModel.Части">
+              <MappingFragment StoreEntitySet="Части">
+                <ScalarProperty Name="Номер_части" ColumnName="Номер части" />
+                <ScalarProperty Name="База_флота" ColumnName="База флота" />
+                <ScalarProperty Name="Место_базирования" ColumnName="Место базирования" />
+                <ScalarProperty Name="Вид_войск" ColumnName="Вид войск" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
